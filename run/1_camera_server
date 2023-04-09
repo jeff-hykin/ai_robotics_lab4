@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+path_to_file=""
+file_name=".envrc"
+folder_to_look_in="$PWD"
+while :
+do
+    # check if file exists
+    if [ -f "$folder_to_look_in/$file_name" ]
+    then
+        path_to_file="$folder_to_look_in/$file_name"
+        break
+    else
+        if [ "$folder_to_look_in" = "/" ]
+        then
+            break
+        else
+            folder_to_look_in="$(dirname "$folder_to_look_in")"
+        fi
+    fi
+done
+if [ -z "$path_to_file" ]
+then
+    #
+    # what to do if file never found
+    #
+    echo "I couldn't find your .envrc file"
+    echo "please run the command from the folder with the .envrc"
+else
+
+    # go to the path
+    cd "$(dirname "$path_to_file")"
+    # source it
+    . ./.envrc
+
+    # 
+    # setup servers
+    # 
+    if ! [ -d "$server_folder" ]
+    then
+        echo "make sure you run"
+        echo "I looked for a folder here:"
+        echo "    $server_folder"
+        echo "but I couldn't find one"
+    else
+        # 
+        # setup node server
+        # 
+        builtin cd "$server_folder"
+            
+        killall deno
+        {
+            archy -t -p "$camera_port_number" --certFile cert.pem --keyFile key.pem . | tee simple_server_output.txt | grep -v "Local:" ||
+            archy -t -p "$camera_port_number" --certFile cert.pem --keyFile key.pem . | tee simple_server_output.txt | grep -v "Local:" ||
+            archy -t -p "$camera_port_number" --certFile cert.pem --keyFile key.pem . | tee simple_server_output.txt | grep -v "Local:" ||
+            archy -t -p "$camera_port_number" --certFile cert.pem --keyFile key.pem . | tee simple_server_output.txt | grep -v "Local:" ||
+            echo "Simple server failed too many times, please restart camera_server manually"
+        } &
+        
+        # if not given host_ip_address
+        if [ -z "$host_ip_address" ]
+        then
+            sleep 3
+            detect_host_ip_address="$(cat simple_server_output.txt | grep 'Network:' | sd '.*?Network:.*?https?://(.+)?:'"$camera_port_number" '${1}')"
+            if [ -n "$detect_host_ip_address" ]
+            then
+                host_ip_address="$detect_host_ip_address"
+                echo 'detected host_ip_address: '"$host_ip_address"
+            else
+                echo 'unable ot detect host_ip_address'
+                echo 'please enter it manually at the top of the .envrc'
+            fi
+        fi
+
+        # 
+        # patch rb_server.launch (inject correct cert.pem and key.pem paths, and default host address)
+        # 
+        sleep 1
+        echo "patching rb_server.launch with new data"
+        sd 'name="port" default=".*?"' 'name="port" default="'"$rosbridge_port_number"'"' rb_server.launch
+        sd 'address" default=".*?"' 'address" default="'"$host_ip_address"'"' rb_server.launch
+        sd 'value=".*sb_master/sb_web/cert\.pem' "value=\"$PWD/cert.pem" rb_server.launch
+        sd 'value=".*sb_master/sb_web/key\.pem' "value=\"$PWD/key.pem" rb_server.launch
+        sd 'default=".*sb_master/sb_web/cert\.pem' "default=\"$PWD/cert.pem" rb_server.launch
+        sd 'default=".*sb_master/sb_web/key\.pem' "default=\"$PWD/key.pem" rb_server.launch
+        echo "#"
+        echo "# open: https://$host_ip_address:$camera_port_number"
+        echo "#"
+    fi
+
+fi
+

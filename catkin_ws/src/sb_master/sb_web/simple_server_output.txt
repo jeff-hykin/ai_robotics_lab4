@@ -1,0 +1,21 @@
+[1;1H[0J
+
+  [1m[32m🦕  🚚 Denoliver[39m[22m
+
+  Now serving [1m.[22m:
+
+      [1mLocal:[22m      https://localhost:8080
+      [1mNetwork:[22m    https://172.17.0.1:8080
+
+  
+  
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /
+[1m[31m
+ERROR: Broken pipe (os error 32)[39m[22m
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /
+[1m[32mGET[39m[22m /

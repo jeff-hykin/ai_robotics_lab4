@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<head>
+    <title>Link</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/css-baseline/css/4.css">
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>
+    <script src="https://unpkg.com/@rive-app/canvas@1.0.98"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+        :root {
+            --gray-pallet-background: rgb(30, 37, 53);
+            --red-pallet-background: lightcoral;
+            --off-white: hsl(0, 0%, 87.8%);
+            --charcoal: hsl(180, 0%, 31%);
+            --charcoal-on-charcoal: hsl(0deg 0% 50%);
+            --soft-gray-gradient: linear-gradient(-110deg, whitesmoke, var(--off-white));
+            /* misc */
+            --red-pallet-font: white;
+            --decent-color-1: lightcoral;
+            --decent-color-2: salmon;
+            --decent-color-3: lightpink;
+            --decent-color-4: lightsalmon;
+            --decent-color-5: coral;
+            --decent-color-6: lightcyan;
+            --decent-color-7: lightblue;
+            --decent-color-8: lightsteelblue;
+            --decent-color-9: skyblue;
+            --decent-color-10: lightskyblue;
+            --decent-color-11: cornflowerblue;
+            --decent-color-12: dodgerblue;
+            --decent-color-13: aquamarine;
+            --decent-color-14: turquoise;
+            --decent-color-15: darkturquoise;
+            --decent-color-16: lightseagreen;
+            --decent-color-17: darkcyan;
+            --decent-color-18: teal;
+            --decent-color-19: mediumspringgreen;
+            --decent-color-20: lightgreen;
+            --decent-color-21: cadetblue;
+            --decent-color-22: darkorchid;
+            --decent-color-23: blueviolet;
+        }
+        body {
+            font-size: 0.9em;
+            font-family: Roboto;
+        }
+        .animate {
+            transition: all 0.5s ease-in-out 0s;
+        }
+        .weak-shadow {
+            transition: all 0.3s ease-in-out 0s;
+            box-shadow: 0 4px 5px 0 rgba(0,0,0,0.10),0 1px 10px 0 rgba(0,0,0,0.08),0 2px 4px -1px rgba(0,0,0,0.24);
+        }
+        .weak-shadow:hover {
+            box-shadow: 0 8px 17px 2px rgba(0,0,0,0.10),0 6px 30px 5px rgba(0,0,0,0.08),0 8px 10px -7px rgba(0,0,0,0.16);
+        }
+        button {
+            border-radius: 1em;
+            border: none;
+            background-color: cornflowerblue;
+            padding: 0.5em 1em;
+            color: white;
+        }
+        a {
+            color: lightskyblue;
+            text-decoration: underline;
+        }
+        span {
+            vertical-align: text-top;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<!--                                   -->
+<!-- Synchonous/Fast loading animation -->
+<!--                                   -->
+    <body>
+        <div style="display: flex;justify-content: center;align-items: center;height: 100vh;">
+            <div style="width: 50px;height: 50px;border: 10px solid #dddddd;border-top-color: #009579;border-radius: 50%;transform: rotate(0.16turn);" id="good-component--initial-loader">
+            </div>
+        </div>
+    </body>
+    <script>
+        // 
+        // Synchonous/Fast loading animation
+        // 
+            const animateLoader = ()=>{
+                const element = document.getElementById("good-component--initial-loader")
+                element && element.animate(
+                    [
+                        { transform: 'rotate(0turn)' },
+                        { transform: 'rotate(1turn)' },
+                    ],
+                    {
+                        duration: 1000,
+                        iterations: Infinity,
+                        easing: 'ease',
+                    },
+                )
+            }
+            document.body ? animateLoader() : document.addEventListener("DOMContentLoaded", animateLoader)
+    </script>
+
+<!--                -->
+<!-- The main code  -->
+<!--                -->
+<script type="module">//;(async () => {
+    // 
+    // 
+    // Initialize
+    // 
+    // 
+        import { intersection, subtract } from "https://deno.land/x/good@0.7.8/set.js"
+        import { Column, Row } from "https://deno.land/x/good_component@0.1.4/elements.js"
+        import { stringToBytes } from "https://deno.land/x/binaryify@0.0.7/tools.js"
+        var { html } = await import("https://deno.land/x/elementalist@0.5.29/main/deno.js?code")
+
+        // 
+        // Custom elements
+        // 
+        html = html.extend({
+            Column,
+            Row,
+            Eye,
+            Head,
+        })
+        
+        // 
+        // animations
+        // 
+        const [ fadeIn, fadeOut, verticalCrushAndRestore ] = [
+            [
+                [
+                    { offset: 0.0, opacity: 0, },
+                    { offset: 0.1, opacity: 0, },
+                    { offset: 1.0, opacity: 1, },
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out',
+                    iterations: 1
+                }
+            ],
+            [
+                [
+                    { offset: 0.0, opacity: 1, },
+                    { offset: 0.1, opacity: 1, },
+                    { offset: 1.0, opacity: 0, },
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out',
+                    iterations: 1
+                }
+            ],
+            [
+                [
+                    { offset: 0.0, transform: 'scaleY(1)', },
+                    { offset: 0.5, transform: 'scaleY(0)', },
+                    { offset: 1.0, transform: 'scaleY(1)', },
+                ], {
+                    duration: 400,
+                    easing: 'ease-out',
+                    iterations: 1
+                }
+            ],
+        ]
+    
+    // 
+    // 
+    // Components
+    // 
+    // 
+        const blinkRate = 4000 // miliseconds
+        const eyeSize = 12 // rem
+        const eyeRgb = [34,242,154]
+        const headColor = "#4b5e6b"
+        function Eye() {
+            const eyeColor = `rgb(${eyeRgb.join(",")})`
+            return html`
+                <Column
+                    background-color="${eyeColor}"
+                    width=${`${eyeSize}rem`}
+                    height=${`${eyeSize}rem`}
+                    border-radius=2rem
+                    position=relative
+                    box-shadow="${`0px 0px 10px 5px rgba(${eyeRgb.join(",")},0.5)`}"
+                    transition="all 0.2s ease-out 0s"
+                    right=0
+                    top=0
+                    >
+                        ${""/*  Eye-Glimmer */}
+                        <Column
+                            name="Glimmer"
+                            width=12%
+                            height=12%
+                            border-radius=35%
+                            position=absolute
+                            top=1.4rem
+                            right=1.7rem
+                            border-top-right-radius=1rem
+                            background-color=rgba(255,255,255,0.7)
+                            >
+                                <Column
+                                    name="GlimmerCut"
+                                    border-radius=100rem
+                                    background-color=${eyeColor}
+                                    position=absolute
+                                    min-height=100%
+                                    min-width=100%
+                                    bottom="-47%"
+                                    left="-44%"
+                                    z-index=1
+                                    >
+                                </Column>
+                        </Column>
+                            
+                        <Column
+                            name="Eyebrow"
+                            background-color=${headColor}
+                            position=absolute
+                            min-height=28%
+                            min-width=140%
+                            z-index=5
+                            top=-41%
+                            left=-10%
+                            transform=rotate(-5deg)
+                            >
+                        </Column>
+                        
+                </Column>
+                    
+            `
+        }
+        
+        function Head() {
+            const eyes = [
+                html`<Eye />`,
+                html`<Eye />`,
+            ]
+        
+            const element = html`
+                <Row
+                    display=flex
+                    background-color="${headColor}"
+                    padding=10rem
+                    padding-left=8rem
+                    padding-right=8rem
+                    width=48rem
+                    height="32rem"
+                    justify-content="space-around"
+                    border-radius=7rem
+                    box-shadow="0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3)"
+                    >
+                        ${eyes}
+                </Row>
+            `
+            
+            // 
+            // blink animation
+            // 
+            element.blink = ()=>{
+                for (let each of eyes) {
+                    each.animate(...verticalCrushAndRestore)
+                }
+            }
+            element.blink()
+            setInterval(element.blink, blinkRate)
+            
+            // 
+            // look at control
+            // 
+            element.lookAt = function(xPercent, yPercent) {
+                for (let each of eyes) {
+                    // const startingYPosition = each.style.top
+                    // const startingXPosition = each.style.right
+                    
+                    // each.animate([
+                    //     [
+                    //         { offset: 0.0, top: startingYPosition, },
+                    //         { offset: 0.5, top: startingYPosition, },
+                    //         { offset: 1.0, top: startingYPosition, },
+                    //         { offset: 1.2, top: startingYPosition, },
+                    //     ], {
+                    //         duration: 400,
+                    //         easing: 'ease-out',
+                    //         iterations: 1
+                    //     }
+                    // ])
+                    each.style.top = `-${yPercent/2}%`
+                    each.style.right = `-${xPercent/4}%`
+                }
+            }
+            
+            // 
+            // size control
+            // 
+            element.size = function(xPercent, yPercent) {
+                for (let each of eyes) {
+                    each.style.width = `${eyeSize * (xPercent/100)}rem`
+                    each.style.height = `${eyeSize * (yPercent/100)}rem`
+                }
+            }
+            
+            window.Head = element
+            return element
+        }
+        
+        // make a high pixel value then shrink to enforce high-resolution
+        const canvas = html`<canvas width="5000" height="5000" style="transform: translate(-45%,-45%) scale(0.1); position: absolute;top: -7rem;left: 0;"></canvas>`
+        
+        const uint8ArrayForRobotEyesRiv = stringToBytes("RIVE\u0007\u0000e@\u0006\u0016%\u0001(\u0001lU\u0001\u0000\u0000\u0000\u0000\u0000\u0017\u0000\u0000\u0001\u0004\bArt\u0000board\u0007\u0000\u0000\u0000\u0016D\b\u0000\u0000\u0016\u0000Dl\u0001\u0000\u0000)\u0004\u0002\u0004root\u0005\u0000\u0000ZzY\u0012C[mN}<D\u0000)\u0005\u0001\u0000\u0010\u0000\u0000@?\u0011\u0000\b\u0000@?Y\u001bS\"RBZ\u0000\u0001I@[\u001c\u0011)\u0007D\u0000)\u0004\t\bLeft E\u0000ye\u0005\u0002YOP\u0000\u000eBZPmaB\b[\u0018n\u0005B\u0000\u0003\n\u0005\u0003\u00108\u001e\u0005>\b\u00118\u001e\u0005>\rO\u0002rjA\u000eFfvRA\u0000\u0007\u0005\u0004\u0014\u0000\u0001\u0000HB\u0015\u0000\u0000HBB{\\\u000f\u0002?\u001f\b\u0000\u0000HB\u0000\u0012\u0005\u0004\u0012%sss\u0000<\u0003\u0005\u0003\r,F\u0004p@\u000eW?\\<\u0000<\u0007\u0005\u0007\u0014\u0000\u0000H@B\u0015\u0000\u0000HB\u001f\u0010\u0000\u0000XA\u0000\u0012\u0005\u0004\u0013%\u001ar\"\u0000,)\u0004\tRigh\u0000t Eye\u0005\u0002\u0000YOP\u000eBZ\u0018\u0000I\u0005B[\u0018n\u0005VB\u0000\u0003\u0005\n\u00108@\u001e\u0005>\u00118\u001e\u0005\u0010>\rOrjA\u000e\u0010FfvA\u0000\u0007\u0005\r\u000b\u0014\u0000\u0000HB\u0015\u0010\u0000\u0000HB{\\\u000fD\u0002?\u001f\u0000\u0000HB \u0000\u0012\u0005\u0014%ss`s\u0000\u0003\u0005\n\r\u0003,F\u0004@\u000eW?g\\<\u0000\u0007\u0005\u000e\u0014\u0003\u0000\u0000HB\u0015\u0000\u0000\u0004HB\u001f\u0000\u0000XA!\u0000\u0012\u0005\u0015%\u001ar`\"\u0000\u0012\u0005\u0016%\u0002k^K\u0000\u0014\u0005\b\u0004\u0000\u0014\u0005\u0007\u0000\u0014\u0000\u0005\u000b\u0000\u0014\u0005\u000e\u0000\u0000\u0014\u0005\u0000\u0000\u001c?)\u0000\\O?@)\\\u000f@=A)\\\u000f?B\u0001$p}?\u0000\u001c?\u0001\u001dxO?@\u0017\u0016`\u0016=Aw*\u000f?\u0003B>=}?\u0000\u001c\u0006\u0000\u001f7\u0005Sta\u0000re\u0000\u001f7\u0006l\u0000ookUp\u0000\u0019\u00003\n\u0000\u001a5[\u0000\u0000\u001eD\u0002E\u0017F$@p\u0005B\u0000\u001eC\u0003\u0002D\u0002E\u0017F`:@-A\u0000\u00193\u000e\u0000\u0001\u001a5\u0011\u0000\u001eD\u0002\u0000E\u0017F\u0000\u0000\u0000? \u0000\u001eC\u0003D\u0002E\u0000\u0017F\f\b\n?\u0000\u0014\u00193\u0003\u0000\u001a5[\u0000\u0000\u001eD\u0002E\u0017F\u0000$p\u0005B\u0000\u001eC\u0005\u0003D\u0002E\u0018F`\u0000:-A\u0000\u00193\u0007\u0003\u0000\u001a5\u0011\u0000\u001eD\u0000\u0002E\u0017F\u0000\u0000\u0000@?\u0000\u001eC\u0003D\u0002\u0000E\u0017F@\u001e\n?(\u0000\u001f7\bloo\u0000kLeft\u0000\u0019\u00003\n\u0000\u001a5Z\u0000\u0000\u001eC\u0001D\u0002E\u0019\u0000F\u0016M\u0003B\u0000\u001e\u001eC\rD\u0001Foa \u000fA\u0000\u001eC\u0013D\u0000\u0001F\f\u0000@@\u0000\u0010\u001a5[\u0000\u001eC\u0001\u0000D\u0002E\u0019F$p \u0005B\u0000\u001eC\rD\u0001\u0001F$p\u0005B\u0000\u0014\u001eC\u0013D\u0001F$@p\u0005B\u0000\u00193\u0003\u0002\u0000\u001a5Z\u0000\u001eD\u0000\u0002E\u0019FTdd\u0010B\u0000\u001eC\u000bD\u0001\u0000F\u001fv\u0003C\u0000\u001e\u0004C\u0010D\u0001F\u0001\u0000\u0000\u0001C\u0000\u001a5[\u0000\u0000\u001eD\u0002E\u0019F$@p\u0005B\u0000\u001eC\u000b\u0002D\u0001F$p\u0005B(\u0000\u001eC\u0010D\u0001F\u0000$p\u0005B\u0000\u001f7\u0005\u0005blink9\u00000\u0001;\u0001\u0000\u00193\u0001\n\u0000\u001a5\u0011\u0000\u001e\u0000D\u0001F\u0000\u0000\u0000? \u0000\u001eC\u0006D\u0002E\u0000\u0019\u0000\u001eC\fD\u0002\u0000E\u0019F\u0000\u0000\u0000? \u0000\u00193\u0003\u0000\u001a5\u0000\u0011\u0000\u001eD\u0001F\u0000\u0000\u0000\u0000?\u0000\u001eC\u0006\u0002D\u0002E\u0019\u0000\u001eC\u0000\fD\u0002E\u0019F\u0000\u0000\u0000\u0000?\u000057\u000f\u0002State M\u0000achine \u00001\u00008\n\u0001\np\bitchAng\u0000le\u00008\n\u0001\u000b\u0010swivelA\u0000ngle\u0000:\n@\u0001\u0004look\u0000\u0000;\n\u0001\u0005bli\u0002nk\u00009\n\u0001\u0007\u0010Layer 1\u0000\u0000>\u0000?\u0000A\u0017@\u0001\u0003\u0000D\u001b\u0001\u0002\u0010\u0000@\u0000I\u0000M%@\u0001\u0001(\u0001\u0000\u0000M\u0004%\u0001\u0002(\u0001\u0001\u0000\t9\n\u0001\u0007Lay\u0002er 2\u0000>\u0000\u0000@\u0000?\u0000A\u0017\u0001 \u0003\u0000=\u0015\u0001\u0003\u0000\b\u0000")
+        window.rive = rive
+        window.riveElement = new rive.Rive({
+            buffer: uint8ArrayForRobotEyesRiv,
+            canvas: canvas,
+            autoplay: true,
+            stateMachines: 'State Machine 1',
+            fit: rive.Fit.cover,
+            onLoad: ()=>{
+                const inputs = riveElement.stateMachineInputs('State Machine 1')
+                const pitchAngle = inputs.find(each=> each.name === 'pitchAngle')
+                const swivelAngle = inputs.find(each=> each.name === 'swivelAngle')
+                swivelAngle.value = 0.5
+                pitchAngle.value = 0.5
+                const triggerLook = inputs.find(each=> each.name === 'look')
+                setTimeout(() => {
+                    console.log(`Triggering look`)
+                    triggerLook.fire()
+                }, 1500)
+            }
+        })
+    
+    // 
+    // 
+    // Main Code
+    // 
+    // 
+        document.body = html`
+            <body font-size=15px>
+                <Column
+                    display="flex"
+                    name="Content-Area"
+                    flex-grow="3"
+                    flex-shrink="0"
+                    align-content="center"
+                    justify-content="center"
+                    padding="1em"
+                    height="100vh"
+                    min-height="40em"
+                    max-width=100%
+                    overflow="auto"
+                    flex-basis="min-content"
+                    onkeydown=${(event)=>console.log("Column", event)}
+                    >
+                        <Head />
+                </Column>
+            </body>
+        `
+        document.body.animate(...fadeIn)
+// })()
+</script>

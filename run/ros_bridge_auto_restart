@@ -1,0 +1,38 @@
+#!/usr/bin/env -S deno run --allow-all
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.20/main/file_system.js"
+import { Console } from "https://deno.land/x/quickr@0.6.20/main/console.js"
+import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.20/main/run.js"
+
+let process = run("roslaunch", "rb_server.launch", Cwd(Console.env.server_folder))
+await new Promise((resolve, reject) => setTimeout(resolve, 2000))
+
+console.log("Starting watcher")
+const watcher = Deno.watchFs([
+    `.envrc`,
+    `${Console.env.server_folder}/rb_server.launch`,
+])
+
+let killInProcess = false
+for await (const event of watcher) {
+    if (killInProcess) {
+        continue
+    } else  {
+        killInProcess = true
+        console.log("#")
+        console.log("#")
+        console.log("# Change detected, restarting rosbridge")
+        console.log("#")
+        console.log("#")
+
+        process.sendSignal("SIGINT")
+        // wait a second
+        await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+        // force kill
+        process.sendSignal("SIGKILL")
+        // wait another second
+        await new Promise((resolve, reject) => setTimeout(resolve, 1000))
+        // restart process
+        process = run("roslaunch", "rb_server.launch", Cwd(Console.env.server_folder))
+        killInProcess = false
+    }
+}

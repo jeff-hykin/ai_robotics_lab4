@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+path_to_file=""
+file_name=".envrc"
+folder_to_look_in="$PWD"
+while :
+do
+    # check if file exists
+    if [ -f "$folder_to_look_in/$file_name" ]
+    then
+        path_to_file="$folder_to_look_in/$file_name"
+        break
+    else
+        if [ "$folder_to_look_in" = "/" ]
+        then
+            break
+        else
+            folder_to_look_in="$(dirname "$folder_to_look_in")"
+        fi
+    fi
+done
+if [ -z "$path_to_file" ]
+then
+    #
+    # what to do if file never found
+    #
+    echo "I couldn't find your .envrc file"
+    echo "please run the command from the folder with the .envrc"
+else
+
+    # go to the path
+    cd "$(dirname "$path_to_file")"
+    # source it
+    . ./.envrc
+    
+    
+    builtin cd "$server_folder"
+    sudo chmod 777 /dev/ttyUSB0
+    # # connect to moveit
+    # python3 sb_interface.py &
+    # run the command
+    rosrun rosserial_python serial_node.py /dev/ttyUSB0
+fi
