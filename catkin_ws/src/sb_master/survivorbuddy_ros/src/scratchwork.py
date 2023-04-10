@@ -137,4 +137,4 @@ def convert_routine_to_function(routine):
 # create a converter function
 time_to_positions = convert_routine_to_function(routine)
 
-time_to_positions(10) # returns the location of all the joints for all the bots at time 10
+print(time_to_positions(11)) # returns the location of all the joints for all the bots at time 10
