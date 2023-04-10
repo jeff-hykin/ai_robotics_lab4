@@ -680,6 +680,93 @@ if True:
 # dancing tools
 # 
 if True:
+
+    #####
+    # i havent tested any of this yet so sorry if it breaks stuff
+    #####
+
+    def jointDictToVec(d):
+        return np.array([d.torso_joint, d.neck_swivel, d.head_nod, d.head_tilt])
+    def jointVec(torso_joint, neck_swivel, head_nod, head_tilt):
+        return np.array([torso_joint, neck_swivel, head_nod, head_tilt])
+    def jointVecToDict(v):
+        return dict(torso_joint=v[0]   , neck_swivel=v[1]   , head_nod=v[2]   , head_tilt=v[3]) 
+
+    reset        = jointVec(torso_joint=0   , neck_swivel=0   , head_tilt=0   , head_nod=0   ) 
+    lean_forward = jointVec(torso_joint=40, neck_swivel=0, head_tilt=0, head_nod=0)
+    lean_back    = jointVec(torso_joint=-40   , neck_swivel=0   , head_tilt=0   , head_nod=0   ) 
+    look_left    = jointVec(torso_joint=0   , neck_swivel=-40   , head_tilt=0   , head_nod=0   ) 
+    look_right   = jointVec(torso_joint=0   , neck_swivel=40   , head_tilt=0   , head_nod=0   ) 
+    look_up      = jointVec(torso_joint=0   , neck_swivel=0   , head_tilt=0   , head_nod=-40   ) 
+    look_down    = jointVec(torso_joint=0   , neck_swivel=0   , head_tilt=0   , head_nod=40   ) 
+    tilt_left    = jointVec(torso_joint=0   , neck_swivel=0   , head_tilt=-40   , head_nod=0   ) 
+    tilt_right   = jointVec(torso_joint=0   , neck_swivel=0   , head_tilt=40   , head_nod=0   ) 
+
+    def allDo(motion):
+        return [motion, motion, motion, motion]
+
+    def delayed_sine_single(time, motion, period, start, end, delay):
+        t = time - delay
+        if t < start:
+            t = 0
+        if t > end:
+            t = end
+        val = math.sin(t * (2 * math.pi / period))
+        return val * motion
+
+    def delayed_sine(time, motion, period, start, end, delay1, delay2, delay3, delay4):
+        return [delayed_sine_single(time, motion, period, start, end, delay1), 
+                    delayed_sine_single(time, motion, period, start, end, delay2), 
+                    delayed_sine_single(time, motion, period, start, end, delay3), 
+                    delayed_sine_single(time, motion, period, start, end, delay4)]
+
+    def sine_single(time, motion, period, phase):
+        t = time + phase
+        val = math.sin(t * (2 * math.pi / period))
+        return val * motion
+
+    def sine(time, motion, period, phase1, phase2, phase3, phase4):
+        return [motion, motion, motion, motion]
+
+    def delayed_sine1(time):
+        return delayed_sine(time=time, motion=lean_back, period=4, start=0, end=2, delay1=0, delay2=0.25, delay3=0.5, delay4=0.75)
+
+    routine = [
+        # time is in seconds
+        { "time":     0, "positions": [                    reset,                    reset,                    reset,                    reset, ], },
+        { "time":    10, "positions": [             0.5 * lean_forward,                     None,                     None,                     None, ], },
+        { "time":    11, "positions": [                     None,             0.5 * lean_forward,                     None,                     None, ], },
+        { "time":    12, "positions": [                     None,                     None,             0.5 * lean_forward,                     None, ], },
+        { "time":    13, "positions": [                     None,                     None,                     None,             0.5 * lean_forward, ], },
+        { "time":    16, "positions": [             0.5 * lean_forward,                    reset,                    reset,                    reset, ], },
+        { "time":    17, "positions": [                    reset,                    reset,                    reset,                    reset, ], },
+        { "time":    19, "positions": allDo( tilt_left + lean_back ) },
+        { "time":    21, "positions": allDo( tilt_right + lean_back ) },
+        { "time":    23, "positions": allDo( reset ) },
+        { "time":    24.00, "positions": delayed_sine1(time=0.25) },
+        { "time":    24.25, "positions": delayed_sine1(time=0.5) },
+        { "time":    24.50, "positions": delayed_sine1(time=0.75) },
+        { "time":    24.75, "positions": delayed_sine1(time=1) },
+        { "time":    25.00, "positions": delayed_sine1(time=1.25) },
+        { "time":    25.25, "positions": delayed_sine1(time=1.5) },
+        { "time":    25.50, "positions": delayed_sine1(time=1.75) },
+        { "time":    25.75, "positions": delayed_sine1(time=2) },
+        { "time":    26.00, "positions": delayed_sine1(time=2.25) },
+        { "time":    26.25, "positions": delayed_sine1(time=2.5) },
+        { "time":    26.50, "positions": delayed_sine1(time=2.75) },
+        { "time":  1000, "positions": [                    reset,                    reset,                    reset,                    reset, ], },
+    ]
+
+    # translate back from numpy arrays to dicts for rest of jeffs stuff
+    for i in range(len(routine)):
+        positions = routine[i]["positions"]
+        positions_dicts = [jointVecToDict(pos) for pos in positions]
+        routine[i]["positions"] = positions_dicts
+
+    #####
+    # end patrick stuff
+    #####
+
     def shift_towards(*, new_value, old_value, proportion):
         if proportion == 1:
             return new_value
