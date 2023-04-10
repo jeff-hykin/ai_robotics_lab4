@@ -8,8 +8,6 @@ import numpy as np
 import blissful_basics as bb
 import random
 import math
-import insightface
-from insightface.app import FaceAnalysis
 import time
 
 logging = False
@@ -627,6 +625,8 @@ if True:
     # Download models from: https://github.com/deepinsight/insightface/issues/1896#issuecomment-1023867304
     insightface_app = None
     def init_insightface_app_if_needed():
+        import insightface
+        from insightface.app import FaceAnalysis
         global insightface_app
         if insightface_app == None:
             insightface_app = FaceAnalysis(name="buffalo_s", providers=['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider'])
@@ -714,6 +714,7 @@ if True:
         { "time":    11, "positions": [                     None,             lean_forward,                     None,                     None, ], },
         { "time":    12, "positions": [                     None,                     None,             lean_forward,                     None, ], },
         { "time":    13, "positions": [                     None,                     None,                     None,             lean_forward, ], },
+        { "time":    16, "positions": [             lean_forward,                    reset,                    reset,                    reset, ], },
         { "time":    16, "positions": [                    reset,                    reset,                    reset,                    reset, ], },
         { "time":    18, "positions": [ [ tilt_left, lean_back ], [ tilt_left, lean_back ], [ tilt_left, lean_back ], [ tilt_left, lean_back ], ], },
         { "time":  1000, "positions": [                    reset,                    reset,                    reset,                    reset, ], },
