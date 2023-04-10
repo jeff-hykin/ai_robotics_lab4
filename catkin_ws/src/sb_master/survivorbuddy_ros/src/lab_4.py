@@ -116,7 +116,7 @@ class Robot:
                 Robot.previous_joint_positions = JointPositions(joint_current)
                 print(f'''Robot.previous_joint_positions = {Robot.previous_joint_positions}''')
             
-            self.move_group.go(joint_current, wait=wait)
+            self.move_group.go([ math.radians(each) for each in joint_current ], wait=wait)
             plan = self.move_group.plan()
             self.move_group.stop()
             
@@ -163,14 +163,14 @@ if True:
     class Dance:
         @Event.when(Robot.percepts.audio_event)
         def when_new_timestep(data):
-            Robot.tell_face(dict(sendMessage=f"found gesture: {gesture}"))
+            # Robot.tell_face(dict(sendMessage=f"found gesture: {gesture}"))
             
-            joint_goals = JointPositions()
+            joint_goals = JointPositions([0,0,0,0])
             joint_goals.torso_joint = 0
             joint_goals.neck_swivel = 0
             joint_goals.head_tilt   = 0
             joint_goals.head_nod    = 0
-            Robot.move_towards_positions(joint_goals, wait=False):
+            Robot.move_towards_positions(joint_goals, wait=False)
             
             
     

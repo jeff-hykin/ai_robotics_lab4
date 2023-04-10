@@ -1,4 +1,4 @@
-from blissful_basics import LazyDict
+from blissful_basics import LazyDict, print
 
 reset        = dict(torso_joint=0   , neck_swivel=0   , head_tilt=0   , head_nod=0   ) 
 lean_forward = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
@@ -36,6 +36,7 @@ def shift_towards(*, new_value, old_value, proportion):
 def convert_routine_to_function(routine):
     if len(routine) == 0:
         raise Exception(f'''The convert_routine_to_function() function got a routine with a length of 0, there needs to be at least one frame in the routine''')
+    
     # standarize the routine values (LazyDict, and flatten the keypoint lists so they're all dict or None)
     for index, each_timestep in enumerate(routine):
         routine[index] = LazyDict(each_timestep)
@@ -72,22 +73,33 @@ def convert_routine_to_function(routine):
     # create a joint-centric representation of the data
     number_of_bots = len(routine[0].positions)
     bot_time_mappings = []
-    for bot_index in range(number_of_bots):
-        time_mappings = LazyDict(
-            torso_joint=LazyDict(),
-            neck_swivel=LazyDict(),
-            head_tilt=LazyDict(),
-            head_nod=LazyDict(),
-        )
-        for each_frame in routine:
-            time_value = each_frame.time
-            position_updates = each_frame.positions[bot_index]
-            if position_updates != None:
-                for each_joint_name, each_value in position_updates.items():
-                    # only add an entry if the value is not None
-                    if each_value != None:
-                        time_mappings[each_joint_name][time_value] = each_value
-        bot_time_mappings.append(time_mappings)
+    print("bots")
+    with print.indent:
+        for bot_index in range(number_of_bots):
+            with print.indent:
+                print(f"bot {bot_index}")
+                time_mappings = LazyDict(
+                    torso_joint=LazyDict(),
+                    neck_swivel=LazyDict(),
+                    head_tilt=LazyDict(),
+                    head_nod=LazyDict(),
+                )
+                with print.indent:
+                    for each_frame in routine:
+                        time_value = each_frame.time
+                        print(f"timestep {time_value}")
+                        with print.indent:
+                            position_updates = each_frame.positions[bot_index]
+                            print(f'''position_updates = {position_updates}''')
+                            if position_updates != None:
+                                for each_joint_name, each_value in position_updates.items():
+                                    # only add an entry if the value is not None
+                                    if each_value != None:
+                                        print(f'''time_mappings[{each_joint_name}][{time_value}] = {each_value}''')
+                                        time_mappings[each_joint_name][time_value] = each_value
+                bot_time_mappings.append(time_mappings)
+    
+    print(f'''bot_time_mappings = {bot_time_mappings}''')
     
     def joint_at_time(bot_index, joint_name, time):
         key_times = tuple(bot_time_mappings[bot_index][joint_name].items())
@@ -137,4 +149,4 @@ def convert_routine_to_function(routine):
 # create a converter function
 time_to_positions = convert_routine_to_function(routine)
 
-print(time_to_positions(11)) # returns the location of all the joints for all the bots at time 10
+time_to_positions(11) # returns the location of all the joints for all the bots at time 10
