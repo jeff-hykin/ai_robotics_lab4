@@ -24,7 +24,7 @@ import rospy
 from geometry_msgs.msg import TwistStamped
 from statistics import median, stdev
 
-from tools import bb, Event, JointPositions, EmotionalPositionGenerators, get_faces, convert_args, time_since_prev, clip_value, now, frame_to_gesture
+from tools import bb, Event, JointPositions, EmotionalPositionGenerators, get_faces, convert_args, time_since_prev, clip_value, now, convert_routine_to_function
 from image_tools import Image
 
 should_log = bb.countdown(20) # 20 = every 20 times its called return true
