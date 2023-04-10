@@ -15,68 +15,6 @@ import time
 logging = False
 
 # 
-# other face stuff
-# 
-
-import cv2
-import numpy as np
-import mediapipe as mp
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-
-
-# initialize mediapipe
-mp_hands = mp.solutions.hands
-hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.7)
-mp_draw = mp.solutions.drawing_utils
-
-# Load the gesture recognizer model
-from blissful_basics import FS
-model = load_model(FS.local_path('mp_hand_gesture'))
-
-# Load class names
-f = open(FS.local_path('gesture.names'), 'r')
-class_names = f.read().split('\n')
-f.close()
-print(class_names)
-
-
-def frame_to_gesture(frame):
-    framergb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    # Get hand landmark prediction
-    result = hands.process(framergb)
-
-    class_name = ''
-
-    # post process the result
-    if result.multi_hand_landmarks:
-        landmarks = []
-        x, y, c = frame.shape
-        for handslms in result.multi_hand_landmarks:
-            for lm in handslms.landmark:
-                # print(id, lm)
-                lmx = int(lm.x * x)
-                lmy = int(lm.y * y)
-
-                landmarks.append([lmx, lmy])
-
-            # Drawing landmarks on frames
-            mp_draw.draw_landmarks(
-                frame,
-                handslms,
-                mp_hands.HAND_CONNECTIONS
-            )
-            
-        # Predict gesture in Hand Gesture Recognition project
-        prediction = model.predict([landmarks])
-        class_id = np.argmax(prediction)
-        class_name = class_names[class_id]
-        return class_name
-    
-    return None
-
-
-# 
 # basics
 # 
 if True:
