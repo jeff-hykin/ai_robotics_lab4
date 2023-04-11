@@ -185,6 +185,7 @@ if True:
         def when_new_timestep(data):
             # Robot.tell_face(dict(sendMessage=f"found gesture: {gesture}"))
             
+            
             joint_goals = JointPositions([0,0,0,0])
             joint_goals.torso_joint = 0
             joint_goals.neck_swivel = 0

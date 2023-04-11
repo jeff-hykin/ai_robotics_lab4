@@ -1,14 +1,14 @@
 from blissful_basics import LazyDict, print
 
 reset        = dict(torso_joint=0   , neck_swivel=0   , head_tilt=0   , head_nod=0   ) 
-lean_forward = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-lean_back    = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-look_left    = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-look_right   = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-look_up      = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-look_down    = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-tilt_left    = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
-tilt_right   = dict(torso_joint=None, neck_swivel=None, head_tilt=None, head_nod=None)
+lean_forward = dict(torso_joint=1   , neck_swivel=2   , head_tilt=3   , head_nod=4   )
+lean_back    = dict(torso_joint=5   , neck_swivel=6   , head_tilt=7   , head_nod=8   )
+look_left    = dict(torso_joint=9   , neck_swivel=10   , head_tilt=11   , head_nod=12   )
+look_right   = dict(torso_joint=13   , neck_swivel=14   , head_tilt=15   , head_nod=16   )
+look_up      = dict(torso_joint=17   , neck_swivel=18   , head_tilt=19   , head_nod=20   )
+look_down    = dict(torso_joint=21   , neck_swivel=22   , head_tilt=23   , head_nod=24   )
+tilt_left    = dict(torso_joint=25   , neck_swivel=26   , head_tilt=27   , head_nod=28   )
+tilt_right   = dict(torso_joint=29   , neck_swivel=30   , head_tilt=31   , head_nod=32   )
 
 routine = [
     # time is in seconds
@@ -73,34 +73,23 @@ def convert_routine_to_function(routine):
     # create a joint-centric representation of the data
     number_of_bots = len(routine[0].positions)
     bot_time_mappings = []
-    print("bots")
-    with print.indent:
-        for bot_index in range(number_of_bots):
-            with print.indent:
-                print(f"bot {bot_index}")
-                time_mappings = LazyDict(
-                    torso_joint=LazyDict(),
-                    neck_swivel=LazyDict(),
-                    head_tilt=LazyDict(),
-                    head_nod=LazyDict(),
-                )
-                with print.indent:
-                    for each_frame in routine:
-                        time_value = each_frame.time
-                        print(f"timestep {time_value}")
-                        with print.indent:
-                            position_updates = each_frame.positions[bot_index]
-                            print(f'''position_updates = {position_updates}''')
-                            if position_updates != None:
-                                for each_joint_name, each_value in position_updates.items():
-                                    # only add an entry if the value is not None
-                                    if each_value != None:
-                                        print(f'''time_mappings[{each_joint_name}][{time_value}] = {each_value}''')
-                                        time_mappings[each_joint_name][time_value] = each_value
-                bot_time_mappings.append(time_mappings)
-    
-    print(f'''bot_time_mappings = {bot_time_mappings}''')
-    
+    for bot_index in range(number_of_bots):
+        time_mappings = LazyDict(
+            torso_joint=LazyDict(),
+            neck_swivel=LazyDict(),
+            head_tilt=LazyDict(),
+            head_nod=LazyDict(),
+        )
+        for each_frame in routine:
+            time_value = each_frame.time
+            position_updates = each_frame.positions[bot_index]
+            if position_updates != None:
+                for each_joint_name, each_value in position_updates.items():
+                    # only add an entry if the value is not None
+                    if each_value != None:
+                        time_mappings[each_joint_name][time_value] = each_value
+        bot_time_mappings.append(time_mappings)
+
     def joint_at_time(bot_index, joint_name, time):
         key_times = tuple(bot_time_mappings[bot_index][joint_name].items())
         prev_time_and_value = list(key_times[0])
@@ -149,4 +138,4 @@ def convert_routine_to_function(routine):
 # create a converter function
 time_to_positions = convert_routine_to_function(routine)
 
-time_to_positions(11) # returns the location of all the joints for all the bots at time 10
+time_to_positions(11.21321) # returns the location of all the joints for all the bots at time 10
