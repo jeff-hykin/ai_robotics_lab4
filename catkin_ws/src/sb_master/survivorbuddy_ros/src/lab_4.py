@@ -44,6 +44,26 @@ class Robot:
         Robot = self.__class__
         # rospy.init_node("lab_2_node")
         rospy.init_node('test_joint', anonymous=True)
+
+        
+        #self.joint_publishers = []
+        #for i in range(4):
+        #    topic_name = f"/sb_{i}_cmd_state"
+        #    self.joint_publishers.append(rospy.Publisher(
+        #        topic_name, TwistStamped, queue_size=20))
+
+        #self.face_publishers = []
+        #for i in range(4):
+        #    topic_name = f"/face/do_{i}_something"
+        #    self.joint_publishers.append(rospy.Publisher(
+        #        topic_name, std_msgs.msg.String, queue_size=5))
+
+        #if config.send_to_rviz:
+        #    self.movement_publishers = []
+        #    for i in range(4):
+        #        topic_name = f"/move_group/display_{i}_planned_path"
+        #        self.joint_publishers.append(rospy.Publisher(
+        #            topic_name, DisplayTrajectory, queue_size=20))
         
         self.joint_publisher = rospy.Publisher(
             "/sb_cmd_state",
