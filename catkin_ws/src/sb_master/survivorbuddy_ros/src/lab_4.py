@@ -20,6 +20,9 @@ import time
 import math
 import math
 
+from playsound import playsound
+from threading import Thread
+
 try:
     from math import pi, tau, dist, fabs, cos
 except:  # For Python 2 compatibility
@@ -584,6 +587,11 @@ if __name__ == '__main__':
     ##############################
     
     multi = MultiRobotBehavior()
+
+    # play music
+    t = Thread(target=lambda: playsound('music.mp3'), args=[])
+    t.start()
+
     while not rospy.is_shutdown():
         multi.sb_callback()
         rate.sleep()
