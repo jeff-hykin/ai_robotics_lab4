@@ -579,7 +579,7 @@ class MultiRobotBehavior(object):
     	
 if __name__ == '__main__':
     rospy.init_node("lab_4_node")
-    rate = rospy.Rate(10)  # 10hz
+    rate = rospy.Rate(50)  # 10hz
     
     ##############################
     # YOUR CODE HERE             #
